@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        https://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/mvc
+        https://www.springframework.org/schema/mvc/spring-mvc.xsd">
+
+    <context:component-scan base-package="org.hrbust.materials"/>
+    <mvc:annotation-driven/>
+
+<!--连接SQLServer -->
+<!--    <bean id="dataSource1" class="org.springframework.jdbc.datasource.DriverManagerDataSource">-->
+<!--        <property name="driverClassName" value="com.microsoft.sqlserver.jdbc.SQLServerDriver"/>-->
+<!--        <property name="url" value="jdbc:sqlserver://cn-zz-bgp-1.natfrp.cloud:20458;DatabaseName=a"/>-->
+<!--        <property name="username" value="sa"/>-->
+<!--        <property name="password" value="123"/>-->
+<!--    </bean>-->
+<!--    <bean id="dataSource2" class="org.springframework.jdbc.datasource.DriverManagerDataSource">-->
+<!--        <property name="driverClassName" value="com.microsoft.sqlserver.jdbc.SQLServerDriver"/>-->
+<!--        <property name="url" value="jdbc:sqlserver://cn-zz-bgp-1.natfrp.cloud:20458;DatabaseName=b"/>-->
+<!--        <property name="username" value="sa"/>-->
+<!--        <property name="password" value="123"/>-->
+<!--    </bean>-->
+<!--    <bean id="dataSource3" class="org.springframework.jdbc.datasource.DriverManagerDataSource">-->
+<!--        <property name="driverClassName" value="com.microsoft.sqlserver.jdbc.SQLServerDriver"/>-->
+<!--        <property name="url" value="jdbc:sqlserver://cn-zz-bgp-1.natfrp.cloud:20458;DatabaseName=c"/>-->
+<!--        <property name="username" value="sa"/>-->
+<!--        <property name="password" value="123"/>-->
+<!--    </bean>-->
+
+
+    <bean id="dataSource1" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="com.mysql.cj.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://cn-cd-dx-1.natfrp.cloud:52987/a?useUicode=true&amp;characterEncoding=utf-8&amp;useSSL=true"/>
+        <property name="username" value="root"/>
+        <property name="password" value="123456"/>
+    </bean>
+
+    <bean id="dataSource2" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="com.mysql.cj.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://cn-cd-dx-1.natfrp.cloud:52987/b?useUicode=true&amp;characterEncoding=utf-8&amp;useSSL=true"/>
+        <property name="username" value="root"/>
+        <property name="password" value="123456"/>
+    </bean>
+    <bean id="dataSource3" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="com.mysql.cj.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://cn-cd-dx-1.natfrp.cloud:52987/c?useUicode=true&amp;characterEncoding=utf-8&amp;useSSL=true"/>
+        <property name="username" value="root"/>
+        <property name="password" value="123456"/>
+    </bean>
+
+
+    <bean id="sqlSessionFactory1" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="configLocation" value="classpath:mybatis-config.xml"/>
+        <property name="dataSource" ref="dataSource1"/>
+        <property name="mapperLocations" value="classpath:a/*-mapper.xml"/>
+    </bean>
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="org.hrbust.materials.a.mapper"/>
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory1"/>
+    </bean>
+
+
+    <bean id="sqlSessionFactory2" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="configLocation" value="classpath:mybatis-config.xml"/>
+        <property name="dataSource" ref="dataSource2"/>
+        <property name="mapperLocations" value="classpath:b/*-mapper.xml"/>
+    </bean>
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="org.hrbust.materials.b.mapper"/>
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory2"/>
+    </bean>
+
+
+    <bean id="sqlSessionFactory3" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="configLocation" value="classpath:mybatis-config.xml"/>
+        <property name="dataSource" ref="dataSource3"/>
+        <property name="mapperLocations" value="classpath:c/*-mapper.xml"/>
+    </bean>
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="org.hrbust.materials.c.mapper"/>
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory3"/>
+    </bean>
+
+<!--    <bean class = "org.springframework.web.servlet.view.InternalResourceViewResolver">-->
+<!--        <property name="prefix" value="/WEB-INF/"></property>-->
+<!--        <property name="suffix" value=".jsp"></property>-->
+<!--    </bean>-->
+    <!--静态资源处理-->
+    <mvc:resources mapping="/images/**" location="/images/"/>
+    <mvc:resources mapping="/css/**" location="/css/"/>
+    <mvc:resources mapping="/js/**" location="/js/"/>
+
+    <!--配置拦截器-->
+    <mvc:interceptors><!--拦截器都在这声明-->
+        <mvc:interceptor><!--子标签，声明一个拦截器，必须按照下面顺序写！！-->
+            <mvc:mapping path="/**"/><!--告诉他拦截器要拦谁，可以用通配符，一个*只能表示一层路径，两个*能表示多层路径-->
+            <!--           /**拦截所有处理器-->
+            <mvc:exclude-mapping path="/login"/><!--不拦截谁，排除的那些路径，这个可有可无，但是mapping必须有-->
+            <mvc:exclude-mapping path="/**/*.css"/>
+            <mvc:exclude-mapping path="/**/*.js"/>
+            <mvc:exclude-mapping path="/**/*.png"/>
+            <mvc:exclude-mapping path="/**/*.gif"/>
+            <mvc:exclude-mapping path="/**/*.jpg"/>
+            <mvc:exclude-mapping path="/**/*.jpeg"/>
+            <bean class="org.hrbust.materials.interceptor.LoginInterceptor"/><!--告诉拦截器的类是谁-->
+        </mvc:interceptor>
+    </mvc:interceptors>
+
+</beans>
